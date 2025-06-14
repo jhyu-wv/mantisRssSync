@@ -313,7 +313,8 @@ class GitHubIssueManager:
               }) {
                 item {
                     id
-              }
+                    }
+                }
             }
             """
 
