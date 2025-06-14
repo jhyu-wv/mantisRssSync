@@ -320,11 +320,6 @@ class GitHubIssueManager:
                         title
                         url
                         state
-                        author {
-                            login
-                        }
-                        createdAt
-                        updatedAt
                         }
                       }
                     }
