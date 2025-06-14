@@ -304,26 +304,32 @@ class GitHubIssueManager:
                 logger.warning("프로젝트 ID가 없어 프로젝트 추가를 건너뜁니다.")
                 return
             
-            # 1. 이슈를 프로젝트에 추가
+            # 1. 이슈를 프로젝트에 추가하기 위한 mutation
             add_mutation = """
             mutation($projectId: ID!, $contentId: ID!) {
               addProjectV2ItemById(input: {
                 projectId: $projectId
                 contentId: $contentId
               }) {
-                id
-                content {
-                    ... on Issue {
+                item {
                     id
-                    number
-                    title
-                    url
-                    state
-                    createdAt
-                    updatedAt
-                  }
+                    content {
+                        ... on Issue {
+                        id
+                        number
+                        title
+                        url
+                        state
+                        author {
+                            login
+                        }
+                        createdAt
+                        updatedAt
+                        }
+                      }
+                    }
+                    clientMutationId
                 }
-              }
             }
             """
 
