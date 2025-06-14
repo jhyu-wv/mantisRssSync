@@ -307,14 +307,23 @@ class GitHubIssueManager:
             # 1. 이슈를 프로젝트에 추가
             add_mutation = """
             mutation($projectId: ID!, $contentId: ID!) {
-              addProjectV2ItemByContentId(input: {
+              addProjectV2ItemById(input: {
                 projectId: $projectId
                 contentId: $contentId
               }) {
-                item {
+                id
+                content {
+                    ... on Issue {
                     id
-                    }
+                    number
+                    title
+                    url
+                    state
+                    createdAt
+                    updatedAt
+                  }
                 }
+              }
             }
             """
 
