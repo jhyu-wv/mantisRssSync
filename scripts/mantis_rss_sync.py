@@ -245,7 +245,8 @@ class GitHubIssueManager:
             'query': query,
             'variables': variables
         }
-        
+        logger.info(f"GraphQL 수행 data :: {data}")
+
         try:
             response = requests.post(
                 'https://api.github.com/graphql',
@@ -255,7 +256,7 @@ class GitHubIssueManager:
             )
             if response.status_code == 200:
                 result = response.json()
-                logger.info(f"GraphQL 수행 내역: {result}")
+                logger.info(f"GraphQL 수행 결과: {response}")
 
                 if 'errors' in result:
                     logger.error(f"GraphQL 오류: {result['errors']}")
@@ -312,7 +313,6 @@ class GitHubIssueManager:
               }) {
                 item {
                     id
-                    content
               }
             }
             """
@@ -321,7 +321,7 @@ class GitHubIssueManager:
             
             # 이슈의 Global ID 가져오기
             issue = self.repo.get_issue(issue_number)
-            logger.warning(f"  issue::: {issue}")
+            logger.warning(f" _add_issue_to_project issue::: {issue}")
 
             project_id = self.project_info['project_id']
             logger.warning(f"  project_id::: {project_id}")
@@ -335,7 +335,6 @@ class GitHubIssueManager:
             }
 
             logger.warning(f"  variables::: {variables}")
-            logger.warning(f"  add_mutation::: {add_mutation}")
 
             response = self._execute_graphql_query(add_mutation, variables)
             logger.warning(f"  response::: {response}")
