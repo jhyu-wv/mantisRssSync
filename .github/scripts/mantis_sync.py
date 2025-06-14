@@ -46,8 +46,7 @@ class GitHubAPI:
         self.session = requests.Session()
         self.session.headers.update({
             'Authorization': f'Bearer {token}',
-            'Accept': 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28'
+            'Accept': 'application/vnd.github+json'
         })
         self.graphql_url = 'https://api.github.com/graphql'
         self.rest_url = 'https://api.github.com/repos'
@@ -103,12 +102,6 @@ class GitHubProjectManager:
         query = """
         query($owner: String!, $number: Int!) {
             user(login: $owner) {
-                projectV2(number: $number) {
-                    id
-                    title
-                }
-            }
-            organization(login: $owner) {
                 projectV2(number: $number) {
                     id
                     title
