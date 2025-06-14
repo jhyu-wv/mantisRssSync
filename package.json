@@ -1,0 +1,26 @@
+{
+  "name": "github-rss-auto-issue",
+  "version": "1.0.0",
+  "description": "Automatically create GitHub issues from RSS feeds using Projects V2 API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "dev": "node src/index.js --dry-run"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "rss-parser": "^3.13.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nock": "^13.5.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage"
+  }
+}

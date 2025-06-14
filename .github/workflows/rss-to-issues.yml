@@ -1,0 +1,46 @@
+name: RSS to Issues Automation
+
+on:
+  schedule:
+    # 매일 오전 9시 실행 (UTC)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    permission: write-all
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run RSS to Issues automation
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
+          PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+          MANTIS_RSS_URL: ${{ vars.MANTIS_RSS_URL }}
+          DEFAULT_STATUS: ${{ vars.DEFAULT_STATUS }}
+          DEFAULT_MILESTONE: ${{ vars.DEFAULT_MILESTONE }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: npm start
