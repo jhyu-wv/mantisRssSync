@@ -386,7 +386,11 @@ class GitHubIssueManager:
                 id: $itemId
                 milestoneId: $milestoneId
               }) {
-                    issue
+                Issue {
+                    id
+                    title
+                    number
+                  }
                 }
               }
             """
