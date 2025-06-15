@@ -202,7 +202,7 @@ class GitHubIssueManager:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
 
-    def _add_milestone_field_to_project(self):
+    def _add_milestone_field_to_project(self) -> Optional[Dict]:
         """마일스톤를 프로젝트에 추가하고 상태 설정"""
         try:
             if not self.project_info.get('project_id'):
