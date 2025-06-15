@@ -169,7 +169,13 @@ class GitHubIssueManager:
                     logger.info(f"project info :: {target_project['fields']['nodes']}")
 
                     # 필드에 마일스톤이 없다면 새로 추가
-                    if not target_project['fields']['nodes']['name'].lower() in ['milestone', '마일스톤']:
+                    milestone_exists = False
+
+                    for field in target_project['fields']['nodes']:
+                        if field.name.lower() in ['milestone', '마일스톤']:
+                            milestone_exists = True
+
+                    if not milestone_exists:
                         self._add_milestone_field_to_project();
 
                     for field in target_project['fields']['nodes']:
