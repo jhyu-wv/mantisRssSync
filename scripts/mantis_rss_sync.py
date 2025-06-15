@@ -172,20 +172,23 @@ class GitHubIssueManager:
                             continue
 
                         if field['name'].lower() in ['status', '상태']:
+                            status_field = field
+                            status_options = {opt['name']: opt['id'] for opt in field['options']}
+                            break
+
+                        # 필드에 마일스톤이 없다면 새로 추가
+                        if field['name'].lower() in ['milestone', '마일스톤']:
+
                             milestone_field = field
                             milestone_options = {opt['name']: opt['id'] for opt in field['options']}
                             break
 
-                        if field['name'].lower() in ['milestone', 'milestones', '마일스톤']:
-                            status_field = field
-                            status_options = {opt['name']: opt['id'] for opt in field['options']}
-                            break
                     return {
                         'project_id': target_project['id'],
                         'project_title': target_project['title'],
                         'status_field_id': status_field['id'] if status_field else None,
                         'status_options': status_options,
-                        'milestone_field_id': milestone_field['id']  if status_field else None,
+                        'milestone_field_id': milestone_field['id']  if milestone_field else None,
                         'milestone_options': milestone_options
                     }
 
@@ -195,6 +198,56 @@ class GitHubIssueManager:
         except Exception as e:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
+
+    def _add_milestone_field_to_project(self):
+        """마일스톤를 프로젝트에 추가하고 상태 설정"""
+        try:
+            if not self.project_info.get('project_id'):
+                logger.warning("프로젝트 ID가 없어 마일스톤 추가를 건너뜁니다.")
+                return
+
+            # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
+            add_mutation = """
+                mutation($projectId: ID!, $milestoneTitle: str) {
+                  addProjectV2Field(
+                    input: {
+                      projectId: $projectId
+                      name: "Milestone"
+                      dataType: SINGLE_SELECT
+                      singleSelectOptions: [
+                        {name: $milestoneTitle}
+                      ]
+                    }
+                  ) {
+                    projectV2Field {
+                      id
+                      ... on ProjectV2SingleSelectField {
+                        options {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+                """
+
+            variables = {
+                "projectId": self.project_info['project_id'],
+                "milestoneTitle": os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
+            }
+
+            response = self._execute_graphql_query(add_mutation, variables)
+            logger.warning(f" add milestone response::: {response}")
+
+            if response:
+                logger.info(f"마일스톤 #{response['data']}를 프로젝트에 추가했습니다.")
+
+            else:
+                logger.error("마일스톤에 이슈 추가 실패")
+
+        except Exception as e:
+            logger.error(f"마일스톤 추가 중 오류: {e}")
 
     def _get_issue_node_id(self, issue_number: int) -> Optional[str]:
         """이슈 번호로 Node ID 가져오기 """
@@ -436,7 +489,7 @@ class GitHubIssueManager:
                 return
 
             # RSS 아이템에 따른 상태 결정 로직
-            milestone = self._determine_milestone(rss_item)
+            milestone = os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
             # logger.warning(f"상태명 확인 :: '{status}'")
             milestone_field_id = self.project_info['milestone_field_id']
             milestone_option_id = self.project_info['milestone_options'].get(milestone)
@@ -475,21 +528,12 @@ class GitHubIssueManager:
             response = self._execute_graphql_query(update_mutation, variables)
 
             if response and 'data' in response:
-                logger.info(f"이슈 마일스톤을 '{status}'로 설정했습니다.")
+                logger.info(f"이슈 마일스톤을 '{response}'로 설정했습니다.")
             else:
                 logger.error("이슈 마일스톤 설정 실패")
 
         except Exception as e:
             logger.error(f"상태 설정 중 오류: {e}")
-
-    def _determine_milestone(self, rss_item: Dict) -> str:
-        """RSS 아이템 내용에 따른 마일스톤 결정"""
-        # 환경 변수에서 기본 상태 가져오기
-        default_milestone = os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
-
-        # TODO 필요 시 마일스톤 구분자 넣기
-
-        return default_status
 
     def update_issue(self, issue_number: int, rss_item: Dict):
         """기존 이슈 업데이트"""
