@@ -341,7 +341,7 @@ class GitHubIssueManager:
             logger.warning(f"  response::: {response}")
 
             if response and 'data' in response:
-                item_id = response['data']['addProjectV2ItemByContentId']['item']['id']
+                item_id = response['data']['addProjectV2ItemById']['item']['id']
                 logger.info(f"이슈 #{issue_number}를 프로젝트에 추가했습니다.")
 
                 # 2. 상태 설정
