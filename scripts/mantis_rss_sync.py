@@ -167,6 +167,7 @@ class GitHubIssueManager:
                     milestone_options = {}
 
                     for field in target_project['fields']['nodes']:
+                        logger.info(f"project info :: {target_project['fields']['nodes']}")
                         if field == {}:
                             continue
 
@@ -344,12 +345,6 @@ class GitHubIssueManager:
     def _set_issue_status(self, item_id: str, issue_number: int, rss_item: Dict):
         """이슈 상태 설정"""
         try:
-            # milestone_id = self._get_milestone_id()
-            # logger.warning(f"  milestone_id::: {milestone_id}")
-
-            # issue_global_id = self._get_issue_node_id(issue_number)
-            # logger.warning(f"  issue_global_id::: {issue_global_id}")
-
             if not self.project_info.get('status_field_id'):
                 logger.warning("상태 필드가 없어 상태 설정을 건너뜁니다.")
                 return
