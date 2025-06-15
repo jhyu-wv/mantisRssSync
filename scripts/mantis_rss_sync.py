@@ -379,7 +379,7 @@ class GitHubIssueManager:
                 logger.warning(f"상태 '{status}'를 찾을 수 없습니다.")
                 return
 
-            update_status_mutation = """
+            update_mutation = """
                 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
                   updateProjectV2ItemFieldValue(
                        input: {
