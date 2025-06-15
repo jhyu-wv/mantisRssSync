@@ -368,7 +368,10 @@ class GitHubIssueManager:
 
             # RSS 아이템에 따른 상태 결정 로직
             status = self._determine_status(rss_item)
+            logger.warning(f"상태 확인 :: '{status}'")
+
             status_option_id = self.project_info['status_options'].get(status)
+            logger.warning(f"상태 확인 값 :: '{status_option_id}'")
 
             if not status_option_id:
                 logger.warning(f"상태 '{status}'를 찾을 수 없습니다.")
@@ -422,7 +425,7 @@ class GitHubIssueManager:
             variables = {
                 "projectId": self.project_info['project_id'],
                 "itemId": item_id,
-                "milestoneId": milestone_id,
+                "fieldId": milestone_id,
                 "value": {
                     "singleSelectOptionId": status_option_id
                 }
