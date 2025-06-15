@@ -383,15 +383,40 @@ class GitHubIssueManager:
                 fieldId: $fieldId
                 value: $value
               }) {
-                issue {
+                projectV2Item {
                     id
-                    milestone {
+                    content {
+                      ... on Issue {
                         id
                         title
+                        number
+                      }
                     }
+                    fieldValues(first: 20) {
+                      nodes {
+                        ... on ProjectV2ItemFieldSingleSelectValue {
+                          name
+                          field {
+                            ... on ProjectV2SingleSelectField {
+                              name
+                            }
+                          }
+                        }
+                        ... on ProjectV2ItemFieldMilestoneValue {
+                          milestone {
+                            title
+                          }
+                          field {
+                            ... on ProjectV2Field {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
-            }
             """
 
             variables = {
