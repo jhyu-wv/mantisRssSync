@@ -142,7 +142,7 @@ class GitHubIssueManager:
             variables = {"owner": owner, "repo": repo_name}
 
             response = self._execute_graphql_query(query, variables)
-
+            logger.warning(f" 프로젝트 정보 조회 ::: {response}")
             if response and 'data' in response:
                 projects = response['data']['repository']['projectsV2']['nodes']
 
