@@ -188,7 +188,7 @@ class GitHubIssueManager:
             return {}
 
     def _get_milestone_id(self, ) -> Optional[str]:
-        """TEST 마일스톤 ID 가져오기"""
+        """마일스톤 ID 가져오기"""
         owner, repo_name = self.repo.full_name.split('/')
         target_milestone = os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
         headers = {
@@ -204,6 +204,7 @@ class GitHubIssueManager:
             milestones = response.json()
             for milestone in milestones:
                 if milestone['title'] == target_milestone:
+                    logger.warning(f" 마일스톤 조회 성공:: {milestone}")
                     return str(milestone['number'])
 
             return None
