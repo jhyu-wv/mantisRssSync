@@ -205,7 +205,7 @@ class GitHubIssueManager:
             for milestone in milestones:
                 if milestone['title'] == target_milestone:
                     logger.warning(f" 마일스톤 조회 성공:: {milestone}")
-                    return str(milestone['number'])
+                    return str(milestone['node_id'])
 
             return None
         except Exception as e:
