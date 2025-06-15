@@ -369,81 +369,32 @@ class GitHubIssueManager:
 
             # RSS 아이템에 따른 상태 결정 로직
             status = self._determine_status(rss_item)
-            logger.warning(f"상태 확인 :: '{status}'")
+            logger.warning(f"상태명 확인 :: '{status}'")
 
             status_option_id = self.project_info['status_options'].get(status)
+            logger.warning(f"상태 확인 값 :: '{self.project_info['status_options']}'")
             logger.warning(f"상태 확인 값 :: '{status_option_id}'")
 
             if not status_option_id:
                 logger.warning(f"상태 '{status}'를 찾을 수 없습니다.")
                 return
 
-            # 상태 업데이트 mutation
-            update_milestone_mutation = """
-            mutation($projectIds: [ID!], $itemId: ID!, $milestoneId: ID) {
-              updateIssue(input: {
-                projectIds: $projectIds
-                id: $itemId
-                milestoneId: $milestoneId
-              }) {
-                Issue {
-                    id
-                    title
-                    number
-                  }
-                }
-              }
-            """
-
             update_status_mutation = """
                 mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
-                  updateProjectV2ItemFieldValue(input: {
-                    projectId: $projectId
-                    itemId: $itemId
-                    fieldId: $fieldId
-                    value: $value
-                  }) {
-                    projectV2Item {
-                        id
-                        content {
-                          ... on Issue {
-                            id
-                            title
-                            number
-                          }
-                        }
-                        fieldValues(first: 20) {
-                          nodes {
-                            ... on ProjectV2ItemFieldSingleSelectValue {
-                              name
-                              field {
-                                ... on ProjectV2SingleSelectField {
-                                  name
-                                }
-                              }
-                            }
-                            ... on ProjectV2ItemFieldMilestoneValue {
-                              milestone {
-                                title
-                              }
-                              field {
-                                ... on ProjectV2Field {
-                                  name
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                  updateProjectV2ItemFieldValue(
+                       input: {
+                         projectId: $projectId,
+                         itemId: $itemId,
+                         fieldId: $fieldId,
+                         value: $value
+                       }
+                     ) {
+                       projectV2Item {
+                         id
+                       }
+                     }
+                   }
                 """
-
-            update_milestone_variables = {
-                 "projectIds": [self.project_info['project_id']],
-                 "itemId": item_id,
-                 "milestoneId": milestone_id
-             }
 
             variables = {
                 "projectId": self.project_info['project_id'],
@@ -453,10 +404,8 @@ class GitHubIssueManager:
                     "singleSelectOptionId": status_option_id
                 }
             }
-            logger.warning(f" update_milestone_mutation ::: {update_milestone_variables}")
-            response = self._execute_graphql_query(update_milestone_mutation, update_milestone_variables)
 
-            logger.warning(f" update_milestone_mutation ::: {update_milestone_variables}")
+            logger.warning(f" update_variables ::: {variables}")
             response = self._execute_graphql_query(update_mutation, variables)
 
             if response and 'data' in response:
