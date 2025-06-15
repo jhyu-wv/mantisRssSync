@@ -187,7 +187,7 @@ class GitHubIssueManager:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
 
-    def _get_milestone_id(self, ) -> Optional[str]:
+    def _get_milestone_id(self) -> Optional[str]:
         """마일스톤 ID 가져오기"""
         owner, repo_name = self.repo.full_name.split('/')
         target_milestone = os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
@@ -205,7 +205,7 @@ class GitHubIssueManager:
             for milestone in milestones:
                 if milestone['title'] == target_milestone:
                     logger.warning(f" 마일스톤 조회 성공:: {milestone}")
-                    return str(milestone['node_id'])
+                    return str(milestone['id'])
 
             return None
         except Exception as e:
