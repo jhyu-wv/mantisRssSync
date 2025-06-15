@@ -166,8 +166,13 @@ class GitHubIssueManager:
                     milestone_field = None
                     milestone_options = {}
 
+                    logger.info(f"project info :: {target_project['fields']['nodes']}")
+
+                    # 필드에 마일스톤이 없다면 새로 추가
+                    if not target_project['fields']['nodes']['name'].lower() in ['milestone', '마일스톤']:
+                        self._add_milestone_field_to_project();
+
                     for field in target_project['fields']['nodes']:
-                        logger.info(f"project info :: {target_project['fields']['nodes']}")
                         if field == {}:
                             continue
 
@@ -176,9 +181,7 @@ class GitHubIssueManager:
                             status_options = {opt['name']: opt['id'] for opt in field['options']}
                             break
 
-                        # 필드에 마일스톤이 없다면 새로 추가
                         if field['name'].lower() in ['milestone', '마일스톤']:
-
                             milestone_field = field
                             milestone_options = {opt['name']: opt['id'] for opt in field['options']}
                             break
@@ -245,9 +248,11 @@ class GitHubIssueManager:
 
             else:
                 logger.error("마일스톤에 이슈 추가 실패")
+            return response['data']
 
         except Exception as e:
             logger.error(f"마일스톤 추가 중 오류: {e}")
+            return None
 
     def _get_issue_node_id(self, issue_number: int) -> Optional[str]:
         """이슈 번호로 Node ID 가져오기 """
