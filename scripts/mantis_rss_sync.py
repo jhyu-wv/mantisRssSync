@@ -194,60 +194,6 @@ class GitHubIssueManager:
         except Exception as e:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
-"""
-
-    def _get_milestone_id(self) -> Optional[str]:
-         """
-"""마일스톤 ID 가져오기 """
-"""
-        owner, repo_name = self.repo.full_name.split('/')
-        target_milestone = os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
-        headers = {
-            'Authorization': f'Bearer {self.github_token}',
-            'Content-Type': 'application/vnd.github.v3+json',
-        }
-        url = f"https://api.github.com/repos/{owner}/{repo_name}/milestones"
-
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-
-            milestones = response.json()
-            for milestone in milestones:
-                if milestone['title'] == target_milestone:
-                    logger.warning(f" 마일스톤 조회 성공:: {milestone}")
-                    return str(milestone['id'])
-
-            return None
-        except Exception as e:
-            print(f"마일스톤 조회 실패: {e}")
-            return None
-
-    def _get_issue_node_id(self, issue_number: int) -> Optional[str]:
-         """
-"""이슈 번호로 Node ID 가져오기 """
-"""
-        owner, repo_name = self.repo.full_name.split('/')
-        headers = {
-            'Authorization': f'Bearer {self.github_token}',
-            'Content-Type': 'application/vnd.github.v3+json',
-        }
-
-        url = f"https://api.github.com/repos/{owner}/{repo_name}/issues/{issue_number}"
-
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-
-            issue = response.json()
-            logger.warning(f" GET issue node::: {issue}")
-
-            return issue.get('node_id')
-
-        except Exception as e:
-            print(f"이슈 Node ID 조회 실패: {e}")
-            return None
- """
 
     def _execute_graphql_query(self, query: str, variables: Dict) -> Optional[Dict]:
         """GraphQL 쿼리 실행"""
@@ -478,7 +424,7 @@ class GitHubIssueManager:
             milestone_option_id = self.project_info['milestone_options'].get(milestone)
 
             if not milestone_option_id:
-                logger.warning(f"마일스톤 '{status}'를 찾을 수 없습니다.")
+                logger.warning(f"마일스톤 '{milestone}'를 찾을 수 없습니다.")
                 return
 
             update_mutation = """
