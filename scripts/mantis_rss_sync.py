@@ -376,11 +376,11 @@ class GitHubIssueManager:
 
             # 상태 업데이트 mutation
             update_mutation = """
-            mutation($projectId: ID!, $itemId: ID!, $milestoneId: ID!, $value: ProjectV2FieldValue!) {
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
               updateProjectV2ItemFieldValue(input: {
                 projectId: $projectId
                 itemId: $itemId
-                milestoneId: $milestoneId
+                fieldId: $fieldId
                 value: $value
               }) {
                 issue {
