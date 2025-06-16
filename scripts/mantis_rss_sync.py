@@ -171,20 +171,24 @@ class GitHubIssueManager:
                     milestone_exists = False
 
                     for field in target_project['fields']['nodes']:
-                        logger.warning(f"project field :: {field}")
-                        logger.warning(f"project field == 0 :: {len(field) == 0}")
+
                         # 만약 field 가 없으면 패스
                         if len(field) == 0:
                             continue
-                        elif field.name.lower() in ['milestone', '마일스톤']:
+                        elif field['name'].lower() in ['milestone', '마일스톤']:
                             logger.warning(f" 마일스톤 필드 확인, {field}")
+                            milestone_field = field
+                            milestone_options = {opt['name']: opt['id'] for opt in field['options']}
                             milestone_exists = True
 
+                    logger.info(f"milestone_exists :: {milestone_exists}")
+
                     if not milestone_exists:
-                        logger.warning(f"milestone_exists, 마일스톤 속성이 없어 등록합니다.. {milestone_exists}")
+                        logger.info(f"milestone_exists, 마일스톤 속성이 없어 등록합니다.")
                         self._add_milestone_field_to_project();
                         self._get_project_info();
 
+                    # 이슈 상태 용
                     for field in target_project['fields']['nodes']:
                         if field == {}:
                             continue
@@ -193,9 +197,6 @@ class GitHubIssueManager:
                             status_field = field
                             status_options = {opt['name']: opt['id'] for opt in field['options']}
 
-                        elif field['name'].lower() in ['milestone', '마일스톤']:
-                            milestone_field = field
-                            milestone_options = {opt['name']: opt['id'] for opt in field['options']}
 
                     return {
                         'project_id': target_project['id'],
@@ -222,14 +223,14 @@ class GitHubIssueManager:
 
             # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
             add_mutation = """
-                mutation($projectId: ID!) {
+                mutation($projectId: ID!, $milestoneTitle: str) {
                   addProjectV2Field(
                     input: {
                       projectId: $projectId
                       name: "Milestone"
                       dataType: SINGLE_SELECT
                       singleSelectOptions: [
-                        {name:"Logcatch - QA"}
+                        {name: $milestoneTitle}
                       ]
                     }
                   ) {
