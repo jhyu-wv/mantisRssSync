@@ -185,8 +185,7 @@ class GitHubIssueManager:
 
                     if not milestone_exists:
                         logger.info(f"milestone_exists, 마일스톤 속성이 없어 등록합니다.")
-                        self._add_milestone_field_to_project();
-                        self._get_project_info();
+                        self._add_milestone_field_to_project(target_project['id']);
 
                     # 이슈 상태 용
                     for field in target_project['fields']['nodes']:
@@ -214,10 +213,10 @@ class GitHubIssueManager:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
 
-    def _add_milestone_field_to_project(self):
+    def _add_milestone_field_to_project(self, project_id: ID!):
         """마일스톤를 프로젝트에 추가하고 상태 설정"""
         try:
-            if not self.project_info.get('project_id'):
+            if not project_id or len(project_id) == 0:
                 logger.warning("프로젝트 ID가 없어 마일스톤 추가를 건너뜁니다.")
                 return
 
@@ -248,7 +247,7 @@ class GitHubIssueManager:
                 """
 
             variables = {
-                "projectId": self.project_info['project_id'],
+                "projectId": project_id,
                 "milestoneTitle": os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
             }
             logger.warning(f" add milestone variables::: {variables}")
