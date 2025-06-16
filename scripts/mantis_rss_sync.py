@@ -168,15 +168,18 @@ class GitHubIssueManager:
 
                     logger.info(f"project info :: {target_project['fields']['nodes']}")
 
-                    # 필드에 마일스톤이 없다면 새로 추가
+                    # 필드에 마일스톤이 없다면 새로 추가하고 다시 불러오기
                     milestone_exists = False
 
                     for field in target_project['fields']['nodes']:
                         if field.name.lower() in ['milestone', '마일스톤']:
+                            logger.warning(f" 마일스톤 필드 확인, {field}")
                             milestone_exists = True
 
                     if not milestone_exists:
+                        logger.warning(f"milestone_exists, 마일스톤 속성이 없어 등록합니다.. {milestone_exists}")
                         self._add_milestone_field_to_project();
+                        self._get_project_info();
 
                     for field in target_project['fields']['nodes']:
                         if field == {}:
@@ -185,12 +188,10 @@ class GitHubIssueManager:
                         if field['name'].lower() in ['status', '상태']:
                             status_field = field
                             status_options = {opt['name']: opt['id'] for opt in field['options']}
-                            break
 
-                        if field['name'].lower() in ['milestone', '마일스톤']:
+                        elif field['name'].lower() in ['milestone', '마일스톤']:
                             milestone_field = field
                             milestone_options = {opt['name']: opt['id'] for opt in field['options']}
-                            break
 
                     return {
                         'project_id': target_project['id'],
@@ -208,7 +209,7 @@ class GitHubIssueManager:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
 
-    def _add_milestone_field_to_project(self) -> Optional[Dict]:
+    def _add_milestone_field_to_project(self):
         """마일스톤를 프로젝트에 추가하고 상태 설정"""
         try:
             if not self.project_info.get('project_id'):
@@ -254,11 +255,9 @@ class GitHubIssueManager:
 
             else:
                 logger.error("마일스톤에 이슈 추가 실패")
-            return response['data']
 
         except Exception as e:
             logger.error(f"마일스톤 추가 중 오류: {e}")
-            return None
 
     def _get_issue_node_id(self, issue_number: int) -> Optional[str]:
         """이슈 번호로 Node ID 가져오기 """
