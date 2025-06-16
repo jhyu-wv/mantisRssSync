@@ -213,7 +213,7 @@ class GitHubIssueManager:
             logger.error(f"프로젝트 정보 조회 실패: {e}")
             return {}
 
-    def _add_milestone_field_to_project(self, project_id: ID!):
+    def _add_milestone_field_to_project(self, project_id: str):
         """마일스톤를 프로젝트에 추가하고 상태 설정"""
         try:
             if not project_id or len(project_id) == 0:
@@ -222,7 +222,7 @@ class GitHubIssueManager:
 
             # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
             add_mutation = """
-                mutation($projectId: ID!, $milestoneTitle: str) {
+                mutation($projectId: ID!, $milestoneTitle: ID) {
                   addProjectV2Field(
                     input: {
                       projectId: $projectId
