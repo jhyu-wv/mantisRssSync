@@ -222,14 +222,14 @@ class GitHubIssueManager:
 
             # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
             add_mutation = """
-                mutation($projectId: ID!, $milestoneTitle: ID) {
+                mutation($projectId: ID!, $optionNames: [String!]!) {
                   addProjectV2Field(
                     input: {
                       projectId: $projectId
                       name: "Milestone"
                       dataType: SINGLE_SELECT
                       singleSelectOptions: [
-                        {name: $milestoneTitle}
+                        {name: $optionNames}
                       ]
                     }
                   ) {
