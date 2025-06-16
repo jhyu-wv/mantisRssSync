@@ -218,14 +218,14 @@ class GitHubIssueManager:
 
             # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
             add_mutation = """
-                mutation($projectId: ID!, $milestoneTitle: str) {
+                mutation($projectId: ID!) {
                   addProjectV2Field(
                     input: {
                       projectId: $projectId
                       name: "Milestone"
                       dataType: SINGLE_SELECT
                       singleSelectOptions: [
-                        {name: $milestoneTitle}
+                        {name:"Logcatch - QA"}
                       ]
                     }
                   ) {
@@ -246,6 +246,7 @@ class GitHubIssueManager:
                 "projectId": self.project_info['project_id'],
                 "milestoneTitle": os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
             }
+            logger.warning(f" add milestone variables::: {variables}")
 
             response = self._execute_graphql_query(add_mutation, variables)
             logger.warning(f" add milestone response::: {response}")
