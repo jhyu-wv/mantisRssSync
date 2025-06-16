@@ -150,15 +150,12 @@ class GitHubIssueManager:
                 # 프로젝트 이름으로 찾기 또는 첫 번째 프로젝트 사용
                 target_project = None
                 for project in projects:
-                    logger.warning(f" project info check ::: {project}")
                     if project['title'] == project_name:
                         target_project = project
                         break
 
                 # if not target_project and projects:
                 #    target_project = projects[0]  # 첫 번째 프로젝트 사용
-
-                logger.warning(f" target_project ::: {target_project}")
 
                 if target_project:
                     # Milestone 필드 찾기
@@ -174,7 +171,10 @@ class GitHubIssueManager:
                     milestone_exists = False
 
                     for field in target_project['fields']['nodes']:
-                        if field.name.lower() in ['milestone', '마일스톤']:
+                        # 만약 field 가 없으면 패스
+                        if len(field) == 0:
+                            continue
+                        elif field.name.lower() in ['milestone', '마일스톤']:
                             logger.warning(f" 마일스톤 필드 확인, {field}")
                             milestone_exists = True
 
