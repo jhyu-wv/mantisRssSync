@@ -171,6 +171,8 @@ class GitHubIssueManager:
                     milestone_exists = False
 
                     for field in target_project['fields']['nodes']:
+                        logger.warning(f"project field :: {field}")
+                        logger.warning(f"project field == 0 :: {len(field) == 0}")
                         # 만약 field 가 없으면 패스
                         if len(field) == 0:
                             continue
