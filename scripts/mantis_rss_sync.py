@@ -155,8 +155,10 @@ class GitHubIssueManager:
                         target_project = project
                         break
 
-                if not target_project and projects:
-                    target_project = projects[0]  # 첫 번째 프로젝트 사용
+                # if not target_project and projects:
+                #    target_project = projects[0]  # 첫 번째 프로젝트 사용
+
+                logger.warning(f" target_project ::: {target_project}")
 
                 if target_project:
                     # Milestone 필드 찾기
