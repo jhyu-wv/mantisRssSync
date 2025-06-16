@@ -222,15 +222,13 @@ class GitHubIssueManager:
 
             # 1. 마일스톤을 프로젝트에 추가하기 위한 mutation
             add_mutation = """
-                mutation($projectId: ID!, $optionName: String!) {
+                mutation($projectId: ID!,  $value: ProjectV2FieldValue!) {
                   addProjectV2Field(
                     input: {
                       projectId: $projectId
                       name: "Milestone"
                       dataType: SINGLE_SELECT
-                      singleSelectOptions: [
-                        {name:$optionName}
-                      ]
+                      value: $value
                     }
                   ) {
                     projectV2Field {
@@ -248,7 +246,9 @@ class GitHubIssueManager:
 
             variables = {
                 "projectId": project_id,
-                "optionName": os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA')
+                'singleSelectOptions': [
+                    {'name': os.getenv('DEFAULT_MILESTONE', 'Logcatch - QA') }
+                ]
             }
             logger.warning(f" add milestone variables::: {variables}")
 
