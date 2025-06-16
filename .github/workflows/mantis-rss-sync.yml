@@ -54,7 +54,7 @@ jobs:
           TARGET_REPO: ${{ github.repository }}
           STATE_FILE_PATH: 'data/mantis_rss_state.json'
           DEFAULT_MILESTONE: ${{ vars.DEFAULT_MILESTONE }}
-          RSS_PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+          RSS_PROJECT_NAME: ${{ vars.PROJECT_NAME }}
           DEFAULT_ISSUE_STATUS: ${{ vars.DEFAULT_STATUS }}
 
       # 5. 상태 파일 변경사항 커밋
